@@ -28,9 +28,9 @@ def optimize_route(config):
     time = 'Time'
     routing.AddDimension(
         transit_callback_index,
-        300,  # allow waiting time
-        10000,  # maximum time per vehicle
-        True,  # Don't force start cumul to zero.
+        30,  # allow waiting time
+        int(elem['time_matrix'].sum()), # SET THIS TO WORST CASE SCENARIO 300000,  # maximum time per vehicle
+        False,  # Don't force start cumul to zero.
         time)
     time_dimension = routing.GetDimensionOrDie(time)
     # Add time window constraints for each location except depot.
@@ -55,6 +55,7 @@ def optimize_route(config):
         routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
 
     # Solve the problem.
+    #BUG IN THISLINE, IT DOESN'T SOLVE SHIT! RETURNS None
     solution = routing.SolveWithParameters(search_parameters)
     ret = []
 
@@ -66,6 +67,7 @@ def optimize_route(config):
         index = solution.Value(routing.NextVar(index))
         route_distance = routing.GetArcCostForVehicle(previous_index, index, 0)
         elem_order.append((elem_id, route_distance))
+    print(elem_order) # Warning maybe this should be the output!
     return solution
 
 
