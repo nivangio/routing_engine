@@ -91,14 +91,19 @@ def optimise_route():
         geojsons = []
         all_points_str = all_points_to_str(config, to_str=False)
 
-        for i in pairs(index_orders):
+        for ind, i in enumerate(pairs(index_orders)):
 
             first_point = all_points_str[ i[0] ]
             second_point = all_points_str[i[1]]
 
-            geojsons.append(get_geojson_coordinates(first_point, second_point))
+            geojson = get_geojson_coordinates(first_point, second_point)
 
-    return {"route": geojsons, "accumulated_duration": times}
+            geojson["properties"] = {}
+            geojson["properties"]["accumulated_duration"] = times[ind]
+            geojsons.append(geojson)
+
+    return {"type": "FeatureCollection", "features": geojsons}
 
 if __name__ == "__main__":
     app.run(port=5000, host='0.0.0.0')
+    #app.run(port=5000)

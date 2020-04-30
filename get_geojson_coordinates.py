@@ -8,6 +8,6 @@ def get_geojson_coordinates(point_1,point_2):
     response = get(request_url)
 
     response_dict = jsonloadstring(response.text)
-    ret = response_dict["routes"][0]["geometry"]["coordinates"]
+    ret = response_dict["routes"][0]
 
     return ret
