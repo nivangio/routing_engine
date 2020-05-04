@@ -10,10 +10,7 @@ from get_time_matrix import get_time_matrix
 from json import load as jsonload
         
 
-def create_data_model():
-    """Stores the data for the problem."""
-    with open("json_sample.json") as f:
-        config = jsonload(f)
+def create_data_model(config):
     data = {}
     data['time_matrix'] = get_time_matrix(config)
     data['time_windows'] = get_time_constrains(config)
