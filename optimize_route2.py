@@ -6,13 +6,15 @@ from __future__ import print_function
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 from get_time_constrains import get_time_constrains                            
-from get_time_matrix import get_time_matrix  
+from get_time_matrix import get_time_matrix ##, get_fake_time_matrix
 from json import load as jsonload
-        
+
+in_file = './json_sample_2.json'
 
 def create_data_model(config):
     data = {}
     data['time_matrix'] = get_time_matrix(config)
+    #data['time_matrix'] = get_fake_time_matrix(config)
     data['time_windows'] = get_time_constrains(config)
     data['num_vehicles'] = config['vehicles']
     data['depot'] = 0
@@ -20,9 +22,13 @@ def create_data_model(config):
 
 def main():
     """Solve the VRP with time windows."""
-    # Instantiate the data problem.
-    data = create_data_model()
+    with open(in_file,'r') as f:
+        config = jsonload(f)
 
+    # Instantiate the data problem.
+    data = create_data_model(config)
+    #print("data",data)
+    
     # Create the routing index manager.
     manager = pywrapcp.RoutingIndexManager(len(data['time_matrix']),
                                            data['num_vehicles'], data['depot'])
@@ -49,10 +55,11 @@ def main():
     routing.AddDimension(
         transit_callback_index,
         30,  # allow waiting time
-        int(create_data_model()['time_matrix'].sum()), # SET THIS TO WORST CASE SCENARIO #300000,  # maximum time per vehicle
-        False,  # Don't force start cumul to zero.
+        int(create_data_model(config)['time_matrix'].sum()), # SET THIS TO WORST CASE SCENARIO #300000,  # maximum time per vehicle
+        True,  # Don't force start cumul to zero.
         time)
     time_dimension = routing.GetDimensionOrDie(time)
+    time_dimension.SetGlobalSpanCostCoefficient(100)
     # Add time window constraints for each location except depot.
     for location_idx, time_window in enumerate(data['time_windows']):
         if location_idx == 0:

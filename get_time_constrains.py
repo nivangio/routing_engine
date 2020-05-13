@@ -3,7 +3,7 @@ from numpy import Inf
 def get_time_constrains(config):
 
     ret = []
-    ret.append((0,1000000))
+    ret.append((0,99999999999999))
     for i in config["directions"]:
         ##lower is arrive_after
         if "arrive_after" in i.keys():
@@ -15,7 +15,7 @@ def get_time_constrains(config):
             upper_bound = i.get("arrive_before") - config["starting_time"]
         else:
             ##Set a value large enough for it to not get constrained
-            upper_bound = 36000
+            upper_bound = 3600000000000
 
         ret.append((lower_bound, upper_bound))
 
