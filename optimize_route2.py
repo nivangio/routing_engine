@@ -9,7 +9,7 @@ from get_time_constrains import get_time_constrains
 from get_time_matrix import get_time_matrix ##, get_fake_time_matrix
 from json import load as jsonload
 
-in_file = './json_sample_2.json'
+in_file = './json_sample_4.json'
 
 def create_data_model(config):
     data = {}
@@ -17,6 +17,8 @@ def create_data_model(config):
     #data['time_matrix'] = get_fake_time_matrix(config)
     data['time_windows'] = get_time_constrains(config)
     data['num_vehicles'] = config['vehicles']
+    data['demands'] = config['demands'] # TO DO function get_capabilities
+    data['vehicle_capacities'] = config['vehicle_capacities'] 
     data['depot'] = 0
     return data
 
@@ -49,6 +51,22 @@ def main():
 
     # Define cost of each arc.
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+    
+    # Add Capacity constraint.
+    def demand_callback(from_index):
+        """Returns the demand of the node."""
+        # Convert from routing variable Index to demands NodeIndex.
+        from_node = manager.IndexToNode(from_index)
+        return data['demands'][from_node]
+
+    demand_callback_index = routing.RegisterUnaryTransitCallback(
+        demand_callback)
+    routing.AddDimensionWithVehicleCapacity(
+        demand_callback_index,
+        0,  # null capacity slack
+        data['vehicle_capacities'],  # vehicle maximum capacities
+        True,  # start cumul to zero
+        'Capacity')
 
     # Add Time Windows constraint.
     time = 'Time'
