@@ -1,7 +1,9 @@
 {
-  "vehicles": 2,
-  "demands" : [0,1,1,1,1,1],
-  "vehicle_capacities" : [1,4],
+  "vehicles": [
+
+    {"vehicle_capacity":  1},
+    {"vehicle_capacity":  4}
+  ],
   "starting_time": 1587088345,
   "starting_location": {
     "lat": "52.5506738",
@@ -11,28 +13,33 @@
     {
       "long": "9.7873967",
       "lat": "53.5586937",
-      "arrive_before": 1597103345
+      "arrive_before": 1597103345,
+      "demands": 1
     },
     {
       "long": "9.1070041",
       "lat": "48.7793008",
-      "arrive_after": 1587089045
+      "arrive_after": 1587089045,
+      "demands": 1
     },
     {
       "long": "13.428555",
       "lat": "52.523219",
       "arrive_before": 1587088745,
-      "arrive_after": 1587087945
+      "arrive_after": 1587087945,
+      "demands": 1
     },
     {
       "long": "13.44",
       "lat": "52.56",
       "arrive_before": 1587089045,
-      "arrive_after": 1587087945
+      "arrive_after": 1587087945,
+      "demands": 1
     },
     {
       "long": "13.4290392",
-      "lat": "52.5488957"
+      "lat": "52.5488957",
+      "demands": 1
     }
   ]
 }
