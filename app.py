@@ -100,10 +100,8 @@ def optimise_route():
 
         times = []
         time_dimension = routing.GetDimensionOrDie('Time')
-        vehicles = []
+        features = []
         for vehicle_id in range(data['num_vehicles']):
-            elem = {}
-            elem["vehicle_id"] = vehicle_id
             index_orders = []
             index = routing.Start(vehicle_id)
             while not routing.IsEnd(index):
@@ -130,23 +128,29 @@ def optimise_route():
                 ##Improve this
                 except IndexError:
                     second_point = all_points_str[ 0 ]
-                geojson = get_geojson_coordinates(first_point, second_point)
+                osmp_return = get_geojson_coordinates(first_point, second_point)
 
+                geojson = {}
+                geojson["geometry"] = osmp_return["geometry"]
                 geojson["properties"] = {}
                 geojson["properties"]["accumulated_duration"] = times[ind]
+                geojson["properties"]["vehicle"] = vehicle_id
+                geojson["type"] = "Feature"
+
                 geojsons.append(geojson)
 
             ##Append coordinates in coordinates tag
-            elem["coordinates"] = {"type": "FeatureCollection", "features": geojsons}
-            elem["points_to_visit"] = get_points_to_visit(config, index_orders)
-            vehicles.append(elem)
+            features.extend(geojsons)
+            points_to_visit = get_points_to_visit(config, vehicle_id, index_orders)
+
+            features.extend(points_to_visit)
 
     except Exception as e:
         traceback.print_exc()
         raise JsonError(description=e.args[0])
 
 
-    return {"routes": vehicles}
+    return {"type": "FeatureCollection", "features": features}
 
 if __name__ == "__main__":
     app.run(port=5000, host='0.0.0.0')
