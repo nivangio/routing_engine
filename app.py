@@ -98,6 +98,9 @@ def optimise_route():
         # Solve the problem.
         solution = routing.SolveWithParameters(search_parameters)
 
+        if not solution:
+            raise ValueError("No Optimization found")
+
         times = []
         time_dimension = routing.GetDimensionOrDie('Time')
         features = []
@@ -107,7 +110,7 @@ def optimise_route():
             while not routing.IsEnd(index):
                 time_var = time_dimension.CumulVar(index)
                 times.append(solution.Max(time_var))
-                index_orders.append(index)
+                index_orders.append(manager.IndexToNode(index))
                 index = solution.Value(routing.NextVar(index))
 
             ##Get the GEJSONs from OSMP pairwise
@@ -134,7 +137,7 @@ def optimise_route():
                 geojson["geometry"] = osmp_return["geometry"]
                 geojson["properties"] = {}
                 geojson["properties"]["accumulated_duration"] = times[ind]
-                geojson["properties"]["vehicle"] = vehicle_id
+                geojson["properties"]["vehicle_id"] = vehicle_id
                 geojson["type"] = "Feature"
 
                 geojsons.append(geojson)
